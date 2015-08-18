@@ -282,7 +282,6 @@ IFACEMETHODIMP PellucidHandlers::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 	if (HIWORD(pici->lpVerb) != NULL)
 		return E_FAIL;		// IMPORTANT: According to docs, if we don't handle this menu item offset return 'E_FAIL' so that anothers may handle it
 
-	HRESULT hr;
 	int indexMenuItem = LOWORD(pici->lpVerb);
 
 	// Do Action
@@ -436,8 +435,8 @@ void PellucidHandlers::KillTimer()
 		if (s_hWaitThread)
 		{
 			SetEvent(s_heventExitThreadFunc);									// Ask thread to terminate
-			WaitForSingleObject(s_hWaitThread, INFINITE);						// Wait for thread to terminate
 			UnregisterWait(s_hWaitThread), s_hWaitThread = NULL;				// Close handle
+			CloseHandle(s_heventExitThreadFunc), s_heventExitThreadFunc = NULL;	// Close event handle
 		}
 	}
 
@@ -589,14 +588,6 @@ LRESULT CALLBACK PellucidHandlers::ShellWindow_WndProc(HWND hwnd, UINT uMsg, WPA
 					if (bCallDefProc)
 						return DefWindowProc(s_hwndShellWindow, uMsg, wParam, lParam);
 				}
-
-				// If opacity is set at 0x01, don't let double click pass through
-				/*BYTE opacityShellWindow;
-				if (GetLayeredWindowAttributes(s_hwndShellWindow, NULL, &opacityShellWindow, NULL) != FALSE)
-				{
-					if (opacityShellWindow == 0x01)
-						return DefWindowProc(s_hwndShellWindow, uMsg, wParam, lParam);
-				}*/
 			}
 			break;
 
