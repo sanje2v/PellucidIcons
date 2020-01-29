@@ -46,12 +46,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 #ifdef X86
 
-Source:"C:\Users\Sanjeev\Documents\Visual Studio 2015\Projects\PellucidIcons\Release\PellucidIcons.dll";DestDir:"{sys}";Flags:regserver uninsrestartdelete
+Source:"..\x64\Release\PellucidIcons.dll";DestDir:"{sys}";Flags:regserver uninsrestartdelete
 
 #else
 ; X64
 
-Source:"C:\Users\Sanjeev\Documents\Visual Studio 2015\Projects\PellucidIcons\x64\Release\PellucidIcons.dll";DestDir:"{sys}";Flags:regserver uninsrestartdelete
+Source:"..\x64\Release\PellucidIcons.dll";DestDir:"{sys}";Flags:regserver uninsrestartdelete
 
 #endif
 

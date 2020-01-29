@@ -34,8 +34,9 @@ protected:
 	~PellucidHandlers(void);
 
 private:
-	// Reference count of component.
-	long m_cRef;
+	// Instance variable
+	long m_cRef;					// Reference count of component
+
 	// Mapping from menu item index to associated handler
 	std::map<int, void(PellucidHandlers::*)()> m_mapHandlers;
 
@@ -64,8 +65,8 @@ private:
 	static bool s_bIsMouseOnShellWindow;
 	static sized_queue<POINT> s_queueMousePos;
 	static bool s_bPellucidIcons;
+	static HBITMAP s_hbitmapPellucidIcon;	// Application icon bitmap handle
 	static LONG s_quarterWidthShellWindow;
-	static HBITMAP s_hbitmapPellucidIcon;
 	static HANDLE s_heventExitThreadFunc;
 	static HANDLE s_hWaitThread;
 	static HWND s_hwndShellWindow;

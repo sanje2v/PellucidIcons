@@ -17,8 +17,8 @@ extern long g_cDllRef;
 bool PellucidHandlers::s_bIsMouseOnShellWindow = false;
 sized_queue<POINT> PellucidHandlers::s_queueMousePos(MOUSEPOS_HISTORYDEPTH);
 bool PellucidHandlers::s_bPellucidIcons = true;
-LONG PellucidHandlers::s_quarterWidthShellWindow = 0;
 HBITMAP PellucidHandlers::s_hbitmapPellucidIcon = NULL;
+LONG PellucidHandlers::s_quarterWidthShellWindow = 0;
 HANDLE PellucidHandlers::s_heventExitThreadFunc = NULL;
 HANDLE PellucidHandlers::s_hWaitThread = NULL;
 HWND PellucidHandlers::s_hwndShellWindow = NULL;
@@ -33,7 +33,14 @@ PellucidHandlers::PellucidHandlers(void) : m_cRef(1)
 
 PellucidHandlers::~PellucidHandlers(void)
 {
-	InterlockedDecrement(&g_cDllRef);
+	if (InterlockedDecrement(&g_cDllRef) <= 0)
+	{
+		if (s_hbitmapPellucidIcon)
+		{
+			DeleteBitmap(s_hbitmapPellucidIcon);
+			s_hbitmapPellucidIcon = NULL;
+		}
+	}
 }
 
 
@@ -450,13 +457,16 @@ void PellucidHandlers::ResetTimer()
 
 	s_heventExitThreadFunc = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	auto interval = Settings::convertInToMillisecs(Settings::getInSetting());
-	RegisterWaitForSingleObject(&s_hWaitThread,
-								s_heventExitThreadFunc,
-								&PellucidIconsTimer_ThreadFunc,
-								NULL,
-								interval,
-								WT_EXECUTEDEFAULT | WT_EXECUTEONLYONCE);
+	if (s_heventExitThreadFunc)
+	{
+		auto interval = Settings::convertInToMillisecs(Settings::getInSetting());
+		RegisterWaitForSingleObject(&s_hWaitThread,
+									s_heventExitThreadFunc,
+									&PellucidIconsTimer_ThreadFunc,
+									NULL,
+									interval,
+									WT_EXECUTEDEFAULT | WT_EXECUTEONLYONCE);
+	}
 }
 
 #pragma endregion
@@ -618,9 +628,6 @@ LRESULT CALLBACK PellucidHandlers::ShellWindow_WndProc(HWND hwnd, UINT uMsg, WPA
 			{
 				// Possibly windows is shutting down, so cleanup
 				KillTimer();
-
-				if (s_hbitmapPellucidIcon)
-					DeleteBitmap(s_hbitmapPellucidIcon);
 
 				SetWindowLongPtr(s_hwndShellWindow, GWLP_WNDPROC, s_hPrevShellWindowWndProc);
 			}

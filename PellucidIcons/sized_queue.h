@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <deque>
 
 template<typename T>
